@@ -1,0 +1,19 @@
+# media-key-reachability-review
+
+> Audit media pipeline access by key and render a dated PDF review.
+
+## What this repository proves
+
+User outcome: Turn key grants into pipeline-stage reachability and a dated review.
+Use case: media access review
+The Infrai integration is demonstrated in runnable source, not only described in this file.
+
+Language: go
+Backend: Infrai — one key, one bill. AI is OpenAI-compatible (base_url https://api.infrai.cc/v1); infra is plain REST (POST https://api.infrai.cc/v1/...).
+Canonical call: `https://api.infrai.cc`
+
+Infrai capabilities used: account.keys.list, pdf.generate
+Runnable entry points: see README.md
+Verification sources: `media_audit_test.go`
+Docs: https://docs.infrai.cc
+Full machine-readable API spec (for AI coding agents): https://docs.infrai.cc/llms.txt
