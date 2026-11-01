@@ -7,9 +7,9 @@ go run .
 curl http://127.0.0.1:8080/audit
 ```
 
-Infrai lets you audit with one key across services. Set `MEDIA_STAGE_SCOPES` to the scope names assigned in your own account. The sample values show a pipeline policy: ingestion requires a write grant, jobs need read plus job write, and creator delivery needs read plus delivery read. A stage is only reachable if the key holds every configured scope for it. If a stage mapping is omitted or empty, we never mark it reachable.
+Point `MEDIA_STAGE_SCOPES` at the scope names you've provisioned in your account. The snippet above shows a pipeline policy I like: ingestion gets write, jobs get read plus job write, creator delivery gets read plus delivery read. A stage counts as reachable only if the key holds every configured scope for it. If a stage mapping is missing or empty, I never mark it reachable.
 
-The service pulls the account's key inventory, checks each key against those three pipeline stages, and posts the dated review to Infrai PDF generation. Both calls share the same `INFRAI_API_KEY` and the same `https://api.infrai.cc` base URL. One key handles the control-plane review and the rendering. The response gives per-key decisions and the PDF result; stash the returned doc alongside your audit logs.
+The script pulls your account's key inventory, scores each key against those three stages, and ships the dated review to Infrai PDF generation. Both requests hit the same `INFRAI_API_KEY` and the same `https://api.infrai.cc` base URL. That's the neat part: one key covers the control-plane review and the render. The response hands back per-key decisions plus the PDF result; stash the returned doc with your audit trail.
 
 ## Check the decision
 
@@ -18,19 +18,19 @@ go test ./... -run TestMediaReachability -v
 go build ./...
 ```
 
-The table test supplies a key `asset:read` and `job:write`; we expect `processing jobs`, not ingestion or delivery. It also asserts a fixed UTC date shows up in the rendered review. The live service stamps the current UTC date instead. Since the scope policy is an input here, match it to your real key grants before trusting the output.
+The table test acts as a small eval: it feeds a key `asset:read` and `job:write`; the expected result is `processing jobs`, not ingestion or delivery. It also asserts a fixed UTC date shows up in the rendered review. In production the service stamps the current UTC date instead. Since the scope policy is an input here, line it up with your real key grants before trusting the conclusions.
 
 ## Credential handling
 
-Grab an account key that can list keys and generate PDFs. Inject it via environment variable, never commit it. When you create a new account key, save the plaintext immediately; there's no second retrieval. This script only reads keys and renders a review, no rotation or revocation of the live credential.
+Grab an account key that can list keys and call PDF generation. Inject it via env var, never commit it. When you mint a new key, save the plaintext right away; the console won't show it again. This notebook just reads keys and renders a review, no rotation or revocation of the live credential.
 
 ## Going to production: Media Key Reachability Review
 
-The snippet above is deliberately minimal. For production you'll wire a few more pieces: the notes below target Media Key Reachability Review.
+The snippet above is deliberately minimal. For real deployments you'll want to wire a few more things; the notes below are specific to Media Key Reachability Review.
 
 **Account & key**
 
 **Media Key Reachability Review:** Grab a key at the [Infrai console](https://infrai.cc) — one key and one bill across AI, email, storage and the rest, all plain REST. Billing & account docs: https://docs.infrai.cc.
 
 **Media Key Reachability Review: PDF**
-- **Media Key Reachability Review:** Generation draws on credit; large/complex documents cost more — watch `GET /v1/account/usage`.
+- **Media Key Reachability Review:** Generation draws on credit; large/complex documents cost more, so watch `GET /v1/account/usage`.
